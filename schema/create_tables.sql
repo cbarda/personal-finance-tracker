@@ -4,7 +4,7 @@
 CREATE DATABASE IF NOT EXISTS finance_tracker;
 USE finance_tracker;
 
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name  VARCHAR(50) NOT NULL,
     last_name   VARCHAR(50) NOT NULL,
@@ -13,13 +13,13 @@ CREATE TABLE customers (
     created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     category_id   INT AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(50) NOT NULL,
     type          ENUM('income','expense') NOT NULL
 );
 
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     account_id  INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
     name        VARCHAR(50) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE accounts (
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id     INT NOT NULL,
     category_id    INT NOT NULL,
