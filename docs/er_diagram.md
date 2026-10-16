@@ -1,4 +1,4 @@
-# ER Diagram — Personal Finance Tracker
+# ER Diagram - Personal Finance Tracker
 
 ```mermaid
 erDiagram
