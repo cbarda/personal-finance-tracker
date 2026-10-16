@@ -51,6 +51,121 @@ queries, stored procedures, and data analysis.
 
 6. Run any query from the `queries/` folder!
 
+## 📊 ER Diagram
+
+```mermaid
+erDiagram
+    CUSTOMERS {
+        int customer_id PK
+        varchar first_name
+        varchar last_name
+        varchar email
+        int age
+        datetime created_at
+    }
+
+    CATEGORIES {
+        int category_id PK
+        varchar name
+        enum type
+    }
+
+    ACCOUNTS {
+        int account_id PK
+        int customer_id FK
+        varchar name
+        decimal balance
+    }
+
+    TRANSACTIONS {
+        int transaction_id PK
+        int account_id FK
+        int category_id FK
+        decimal amount
+        enum type
+        varchar description
+        date date
+    }
+
+    CUSTOMERS ||--o{ ACCOUNTS : "has"
+    ACCOUNTS ||--o{ TRANSACTIONS : "contains"
+    CATEGORIES ||--o{ TRANSACTIONS : "classifies"
+```
+
+## 🔍 Sample Queries & Results
+
+### 1. Customer Balance Summary
+```sql
+SELECT * FROM customer_balance_view;
+```
+| first_name | total_income | total_expenses | balance |
+|------------|-------------|----------------|---------|
+| Maria      | 1500.00     | 750.00         | 750.00  |
+| Nikos      | 2500.00     | 900.00         | 1600.00 |
+| Elena      | 800.00      | 50.00          | 750.00  |
+
+---
+
+### 2. Monthly Transactions
+```sql
+SELECT * FROM monthly_transactions_view;
+```
+| year | month | total_income | total_expenses | total_transactions |
+|------|-------|-------------|----------------|-------------------|
+| 2024 | 1     | 4800.00     | 1700.00        | 7                 |
+
+---
+
+### 3. Highest Transaction per Customer
+```sql
+WITH ranked AS (
+    SELECT 
+        cust.first_name,
+        tra.description,
+        tra.amount,
+        ROW_NUMBER() OVER (PARTITION BY cust.customer_id ORDER BY tra.amount DESC) AS rank_by_amount
+    FROM transactions tra
+    JOIN accounts acc ON tra.account_id = acc.account_id
+    JOIN customers cust ON acc.customer_id = cust.customer_id
+)
+SELECT * FROM ranked WHERE rank_by_amount = 1;
+```
+| first_name | description    | amount  | rank_by_amount |
+|------------|---------------|---------|----------------|
+| Maria      | Monthly salary | 1500.00 | 1              |
+| Nikos      | Monthly salary | 2500.00 | 1              |
+| Elena      | Freelance project | 800.00 | 1           |
+
+## ⚙️ Stored Procedures
+
+### get_customer_transactions
+Returns all transactions for a specific customer.
+```sql
+CALL get_customer_transactions(1);
+```
+
+### get_customer_balance
+Returns total income, expenses and balance for a specific customer.
+```sql
+CALL get_customer_balance(1);
+```
+
+### monthly_spent
+Returns total expenses for a specific customer for a given month and year.
+```sql
+CALL monthly_spent(1, 1, 2024); -- customer_id, month, year
+```
+
+### transfer_fund
+Safely transfers funds between two accounts using transactions and rollback.
+- ✅ Checks for sufficient balance before transfer
+- ✅ Uses START TRANSACTION to ensure atomicity
+- ✅ Automatically rolls back if anything fails
+- ✅ Prevents negative balances
+```sql
+CALL transfer_fund(1, 2, 100.00); -- from_account, to_account, amount
+```
+
 ## 📂 Structure
 
 ### schema/
