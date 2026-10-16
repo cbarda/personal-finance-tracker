@@ -229,7 +229,7 @@ BEGIN
     -- TEST 7: Verify transfer audit log
     -- --------------------------------------------------------
     SELECT
-        'TEST 8: Transfer audit log' AS test_name,
+        'TEST 7: Transfer audit log' AS test_name,
         CASE
             WHEN COUNT(*) >= 1
             THEN 'PASS'
