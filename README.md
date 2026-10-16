@@ -22,33 +22,33 @@ queries, stored procedures, and data analysis.
 ### Steps
 1. Clone the repository
 ```bash
-   git clone https://github.com/cbarda/personal-finance-tracker.git
-   cd personal-finance-tracker
+git clone https://github.com/cbarda/personal-finance-tracker.git
+cd personal-finance-tracker
 ```
 
 2. Create the database and tables
 ```bash
-   mysql -u root -p < schema/01_create_tables.sql
+mysql -u root -p < schema/01_create_tables.sql
 ```
 
 3. Load sample data
 ```bash
-   mysql -u root -p finance_tracker < data/sample_data.sql
+mysql -u root -p finance_tracker < data/sample_data.sql
 ```
 
 4. Apply indexes, views and triggers
 ```bash
-   mysql -u root -p finance_tracker < schema/02_indexes.sql
-   mysql -u root -p finance_tracker < schema/03_views.sql
-   mysql -u root -p finance_tracker < schema/04_triggers.sql
+mysql -u root -p finance_tracker < schema/02_indexes.sql
+mysql -u root -p finance_tracker < schema/03_views.sql
+mysql -u root -p finance_tracker < schema/04_triggers.sql
 ```
 
 5. Load stored procedures
 ```bash
-   mysql -u root -p finance_tracker < procedures/01_get_customer_transactions.sql
-   mysql -u root -p finance_tracker < procedures/02_get_customer_balance.sql
-   mysql -u root -p finance_tracker < procedures/03_monthly_spent.sql
-   mysql -u root -p finance_tracker < procedures/04_transfer_fund.sql
+mysql -u root -p finance_tracker < procedures/01_get_customer_transactions.sql
+mysql -u root -p finance_tracker < procedures/02_get_customer_balance.sql
+mysql -u root -p finance_tracker < procedures/03_monthly_spent.sql
+mysql -u root -p finance_tracker < procedures/04_transfer_fund.sql
 ```
 
 6. Run any query from the `queries/` folder!
@@ -89,9 +89,19 @@ erDiagram
         date date
     }
 
+    TRANSFERS {
+        int transfer_id PK
+        int from_account_id FK
+        int to_account_id FK
+        decimal amount
+        datetime created_at
+    }
+
     CUSTOMERS ||--o{ ACCOUNTS : "has"
     ACCOUNTS ||--o{ TRANSACTIONS : "contains"
     CATEGORIES ||--o{ TRANSACTIONS : "classifies"
+    ACCOUNTS ||--o{ TRANSFERS : "sends"
+    ACCOUNTS ||--o{ TRANSFERS : "receives"
 ```
 
 ## 📂 Structure
@@ -122,7 +132,7 @@ erDiagram
 | `01_get_customer_transactions.sql` | Get all transactions for a customer |
 | `02_get_customer_balance.sql` | Get income, expenses and balance |
 | `03_monthly_spent.sql` | Get total expenses per month |
-| `04_transfer_fund.sql` | Transfer funds between accounts |
+| `04_transfer_fund.sql` | Transfer funds between accounts with full safety guarantees |
 
 ### docs/
 | File | Description |
@@ -176,13 +186,13 @@ SELECT * FROM ranked WHERE rank_by_amount = 1;
 ## ⚙️ Stored Procedures
 
 ### get_customer_transactions
-Returns all transactions for a specific customer.
+Returns all transactions for a specific customer, ordered by date descending.
 ```sql
 CALL get_customer_transactions(1);
 ```
 
 ### get_customer_balance
-Returns total income, expenses and balance for a specific customer.
+Returns total income, expenses and calculated balance for a specific customer.
 ```sql
 CALL get_customer_balance(1);
 ```
@@ -194,23 +204,29 @@ CALL monthly_spent(1, 1, 2024); -- customer_id, month, year
 ```
 
 ### transfer_fund
-Safely transfers funds between two accounts using transactions and rollback.
-- ✅ Checks for sufficient balance before transfer
-- ✅ Uses START TRANSACTION to ensure atomicity
-- ✅ Automatically rolls back if anything fails
-- ✅ Prevents negative balances
+Safely transfers funds between two accounts with full safety guarantees:
+- ✅ Validates amount (non-null, positive)
+- ✅ Validates account IDs (non-null, different accounts)
+- ✅ Locks both accounts in consistent order to prevent deadlocks
+- ✅ Checks source account balance after lock to prevent race conditions
+- ✅ Rolls back automatically on any failure
+- ✅ Logs every transfer in the `transfers` table for audit trail
+- ✅ Schema-level CHECK constraint prevents negative balances
 ```sql
 CALL transfer_fund(1, 2, 100.00); -- from_account, to_account, amount
 ```
 
 ## 📚 Concepts Covered
 - Schema design & normalization
-- JOINs (INNER, multiple tables)
+- JOINs (INNER, LEFT, multiple tables)
 - Aggregations (SUM, GROUP BY, HAVING)
 - CTEs & chained CTEs
 - Window Functions (SUM OVER, ROW_NUMBER, LAG, LEAD)
-- Stored Procedures with IN parameters
+- Stored Procedures with input validation
 - Views for reusable queries
 - Triggers for automatic balance updates
+- Transactions, COMMIT and ROLLBACK
+- Deadlock prevention with consistent lock ordering
+- Race condition handling with SELECT FOR UPDATE
 - Query optimization with EXPLAIN & indexes
-- Data integrity with FOREIGN KEYs & ENUM
+- Data integrity with FOREIGN KEYs, ENUM & CHECK constraints
