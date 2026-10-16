@@ -40,3 +40,15 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (category_id) REFERENCES categories(category_id),
     CONSTRAINT chk_positive_amount CHECK (amount > 0)
 );
+
+CREATE TABLE IF NOT EXISTS transfers (
+    transfer_id    INT AUTO_INCREMENT PRIMARY KEY,
+    from_account_id INT NOT NULL,
+    to_account_id   INT NOT NULL,
+    amount          DECIMAL(10,2) NOT NULL,
+    created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_account_id) REFERENCES accounts(account_id),
+    FOREIGN KEY (to_account_id) REFERENCES accounts(account_id),
+    CONSTRAINT chk_positive_transfer_amount CHECK (amount > 0),
+    CONSTRAINT chk_different_accounts CHECK (from_account_id != to_account_id)
+);
