@@ -14,9 +14,9 @@ INSERT INTO categories (name, type) VALUES
 ('Entertainment', 'expense');
 
 INSERT INTO accounts (customer_id, name, balance) VALUES
-(1, 'Main Account', 2500.00),
-(2, 'Savings', 8000.00),
-(3, 'Main Account', 1200.00);
+(1, 'Main Account', 0.00),
+(2, 'Savings', 0.00),
+(3, 'Main Account', 0.00);
 
 INSERT INTO transactions (account_id, category_id, amount, type, description, date) VALUES
 (1, 1, 1500.00, 'income',  'Monthly salary',    '2024-01-01'),
