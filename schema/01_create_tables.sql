@@ -23,8 +23,9 @@ CREATE TABLE IF NOT EXISTS accounts (
     account_id  INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
     name        VARCHAR(50) NOT NULL,
-    balance     DECIMAL(10,2) DEFAULT 0.00,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+    balance     DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    CONSTRAINT chk_non_negative_balance CHECK (balance >= 0)
 );
 
 CREATE TABLE IF NOT EXISTS transactions (
@@ -36,5 +37,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     description    VARCHAR(255),
     date           DATE NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts(account_id),
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+    CONSTRAINT chk_positive_amount CHECK (amount > 0)
 );
