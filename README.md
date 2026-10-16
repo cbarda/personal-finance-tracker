@@ -220,26 +220,16 @@ CALL transfer_fund(1, 2, 100.00); -- from_account, to_account, amount
 
 Tests are located in the `tests/` folder and run against a dedicated test database to keep production data safe.
 
-### Setup
-Create a separate test database and load the schema:
-```bash
-mysql -u root -p -e "CREATE DATABASE finance_tracker_test;"
-mysql -u root -p finance_tracker_test < schema/01_create_tables.sql
-mysql -u root -p finance_tracker_test < schema/04_triggers.sql
-mysql -u root -p finance_tracker_test < procedures/04_transfer_fund.sql
-```
-
-Then insert test accounts:
-```sql
-INSERT INTO accounts (customer_id, name, balance) VALUES (1, 'Test Account 1', 1000.00);
-INSERT INTO accounts (customer_id, name, balance) VALUES (1, 'Test Account 2', 500.00);
-INSERT INTO accounts (customer_id, name, balance) VALUES (1, 'Test Account 3', 200.00);
-```
-
 ### Run Tests
 ```bash
-mysql -u root -p finance_tracker_test < tests/test_transfer_fund.sql
+mysql -u root -p < tests/test_transfer_fund.sql
 ```
+
+The script automatically:
+- Creates a dedicated `finance_tracker_test` database
+- Loads the schema and procedure
+- Inserts test data
+- Runs all tests and reports PASS/FAIL
 
 ### Test Cases
 | # | Test | Expected |
@@ -253,14 +243,9 @@ mysql -u root -p finance_tracker_test < tests/test_transfer_fund.sql
 | 7 | Audit log verification | Transfer recorded in transfers table |
 
 ### Concurrent Transfer Test (Manual)
-Test 8 must be run manually in two separate MySQL sessions to simulate a race condition:
+Must be run manually in two separate MySQL sessions to simulate a race condition:
 
 ```sql
--- Reset balances first
-UPDATE accounts SET balance = 1000.00 WHERE account_id = 1;
-UPDATE accounts SET balance = 500.00  WHERE account_id = 2;
-UPDATE accounts SET balance = 200.00  WHERE account_id = 3;
-
 -- Session A:
 CALL transfer_fund(1, 2, 800.00);
 
