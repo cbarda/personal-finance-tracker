@@ -1,9 +1,21 @@
+-- Create and use test database
+CREATE DATABASE IF NOT EXISTS finance_tracker_test;
 USE finance_tracker_test;
-
-UPDATE accounts SET balance = 1000.00 WHERE account_id = 1; 
-UPDATE accounts SET balance = 500.00 WHERE account_id = 2;
-UPDATE accounts SET balance = 200.00 WHERE account_id = 3;
-
+-- Load schema first
+SOURCE schema/01_create_tables.sql;
+SOURCE schema/04_triggers.sql;
+-- Load procedure
+SOURCE procedures/04_transfer_fund.sql;
+-- Insert test data
+INSERT INTO customers (first_name, last_name, email, age) 
+VALUES ('Test', 'User', 'test@test.com', 30);
+INSERT INTO accounts (customer_id, name, balance) 
+VALUES (1, 'Test Account 1', 1000.00);
+INSERT INTO accounts (customer_id, name, balance) 
+VALUES (1, 'Test Account 2', 500.00);
+INSERT INTO accounts (customer_id, name, balance) 
+VALUES (1, 'Test Account 3', 200.00);
+-- Tests
 DROP PROCEDURE IF EXISTS run_transfer_tests;
 DELIMITER $$
 CREATE PROCEDURE run_transfer_tests()
