@@ -13,6 +13,44 @@ queries, stored procedures, and data analysis.
 ## 🛠️ Tech Stack
 - MySQL
 
+## 🚀 How to Run
+
+### Prerequisites
+- MySQL 8.0+
+- MySQL Workbench or any MySQL client
+
+### Steps
+1. Clone the repository
+```bash
+   git clone https://github.com/cbarda/personal-finance-tracker.git
+```
+
+2. Create the database and tables
+```bash
+   mysql -u root -p < schema/01_create_tables.sql
+```
+
+3. Load sample data
+```bash
+   mysql -u root -p finance_tracker < data/sample_data.sql
+```
+
+4. Apply indexes and views
+```bash
+   mysql -u root -p finance_tracker < schema/02_indexes.sql
+   mysql -u root -p finance_tracker < schema/03_views.sql
+```
+
+5. Load stored procedures
+```bash
+   mysql -u root -p finance_tracker < procedures/01_get_customer_transactions.sql
+   mysql -u root -p finance_tracker < procedures/02_get_customer_balance.sql
+   mysql -u root -p finance_tracker < procedures/03_monthly_spent.sql
+   mysql -u root -p finance_tracker < procedures/04_transfer_fund.sql
+```
+
+6. Run any query from the `queries/` folder!
+
 ## 📂 Structure
 
 ### schema/
