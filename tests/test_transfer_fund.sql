@@ -226,7 +226,7 @@ BEGIN
             ELSE 'FAIL'
         END AS result;
     -- --------------------------------------------------------
-    -- TEST 8: Verify transfer audit log
+    -- TEST 7: Verify transfer audit log
     -- --------------------------------------------------------
     SELECT
         'TEST 8: Transfer audit log' AS test_name,
