@@ -132,7 +132,7 @@ erDiagram
 | `01_get_customer_transactions.sql` | Get all transactions for a customer |
 | `02_get_customer_balance.sql` | Get income, expenses and balance |
 | `03_monthly_spent.sql` | Get total expenses per month |
-| `04_transfer_fund.sql` | Transfer funds between accounts with full safety guarantees |
+| `04_transfer_fund.sql` | Implements transactional fund transfers with input validation, row locking, rollback handling and audit logging |
 
 ### docs/
 | File | Description |
@@ -204,7 +204,7 @@ CALL monthly_spent(1, 1, 2024); -- customer_id, month, year
 ```
 
 ### transfer_fund
-Safely transfers funds between two accounts with full safety guarantees:
+Implements transactional fund transfers with input validation, row locking, rollback handling and audit logging.
 - ✅ Validates amount (non-null, positive)
 - ✅ Validates account IDs (non-null, different accounts)
 - ✅ Locks both accounts in consistent order to prevent deadlocks
