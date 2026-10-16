@@ -34,7 +34,17 @@ erDiagram
         date date
     }
 
+    TRANSFERS {
+        int transfer_id PK
+        int from_account_id FK
+        int to_account_id FK
+        decimal amount
+        datetime created_at
+    }
+
     CUSTOMERS ||--o{ ACCOUNTS : "has"
     ACCOUNTS ||--o{ TRANSACTIONS : "contains"
     CATEGORIES ||--o{ TRANSACTIONS : "classifies"
+    ACCOUNTS ||--o{ TRANSFERS : "sends"
+    ACCOUNTS ||--o{ TRANSFERS : "receives"
 ```
