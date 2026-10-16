@@ -23,6 +23,7 @@ queries, stored procedures, and data analysis.
 1. Clone the repository
 ```bash
    git clone https://github.com/cbarda/personal-finance-tracker.git
+   cd personal-finance-tracker
 ```
 
 2. Create the database and tables
@@ -35,10 +36,11 @@ queries, stored procedures, and data analysis.
    mysql -u root -p finance_tracker < data/sample_data.sql
 ```
 
-4. Apply indexes and views
+4. Apply indexes, views and triggers
 ```bash
    mysql -u root -p finance_tracker < schema/02_indexes.sql
    mysql -u root -p finance_tracker < schema/03_views.sql
+   mysql -u root -p finance_tracker < schema/04_triggers.sql
 ```
 
 5. Load stored procedures
@@ -92,6 +94,41 @@ erDiagram
     CATEGORIES ||--o{ TRANSACTIONS : "classifies"
 ```
 
+## 📂 Structure
+
+### schema/
+| File | Description |
+|------|-------------|
+| `01_create_tables.sql` | Table definitions with constraints and foreign keys |
+| `02_indexes.sql` | Indexes for query performance optimization |
+| `03_views.sql` | Reusable views for common queries |
+| `04_triggers.sql` | Trigger to auto-update account balance on transaction insert |
+
+### data/
+| File | Description |
+|------|-------------|
+| `sample_data.sql` | Sample data for testing |
+
+### queries/
+| File | Description |
+|------|-------------|
+| `01_joins_and_aggregations.sql` | JOINs, GROUP BY, HAVING |
+| `02_common_table_expressions.sql` | CTEs and chained CTEs |
+| `03_window_functions.sql` | SUM OVER, ROW_NUMBER, LAG, LEAD |
+
+### procedures/
+| File | Description |
+|------|-------------|
+| `01_get_customer_transactions.sql` | Get all transactions for a customer |
+| `02_get_customer_balance.sql` | Get income, expenses and balance |
+| `03_monthly_spent.sql` | Get total expenses per month |
+| `04_transfer_fund.sql` | Transfer funds between accounts |
+
+### docs/
+| File | Description |
+|------|-------------|
+| `er_diagram.md` | Entity Relationship Diagram |
+
 ## 🔍 Sample Queries & Results
 
 ### 1. Customer Balance Summary
@@ -130,11 +167,11 @@ WITH ranked AS (
 )
 SELECT * FROM ranked WHERE rank_by_amount = 1;
 ```
-| first_name | description    | amount  | rank_by_amount |
-|------------|---------------|---------|----------------|
-| Maria      | Monthly salary | 1500.00 | 1              |
-| Nikos      | Monthly salary | 2500.00 | 1              |
-| Elena      | Freelance project | 800.00 | 1           |
+| first_name | description       | amount  | rank_by_amount |
+|------------|------------------|---------|----------------|
+| Maria      | Monthly salary    | 1500.00 | 1              |
+| Nikos      | Monthly salary    | 2500.00 | 1              |
+| Elena      | Freelance project | 800.00  | 1              |
 
 ## ⚙️ Stored Procedures
 
@@ -166,40 +203,6 @@ Safely transfers funds between two accounts using transactions and rollback.
 CALL transfer_fund(1, 2, 100.00); -- from_account, to_account, amount
 ```
 
-## 📂 Structure
-
-### schema/
-| File | Description |
-|------|-------------|
-| `01_create_tables.sql` | Table definitions with constraints and foreign keys |
-| `02_indexes.sql` | Indexes for query performance optimization |
-| `03_views.sql` | Reusable views for common queries |
-
-### data/
-| File | Description |
-|------|-------------|
-| `sample_data.sql` | Sample data for testing |
-
-### queries/
-| File | Description |
-|------|-------------|
-| `01_joins_and_aggregations.sql` | JOINs, GROUP BY, HAVING |
-| `02_common_table_expressions.sql` | CTEs and chained CTEs |
-| `03_window_functions.sql` | SUM OVER, ROW_NUMBER, LAG, LEAD |
-
-### procedures/
-| File | Description |
-|------|-------------|
-| `01_get_customer_transactions.sql` | Get all transactions for a customer |
-| `02_get_customer_balance.sql` | Get income, expenses and balance |
-| `03_monthly_spent.sql` | Get total expenses per month |
-| `04_transfer_fund.sql` | Transfer funds between accounts |
-
-### docs/
-| File | Description |
-|------|-------------|
-| `er_diagram.md` | Entity Relationship Diagram |
-
 ## 📚 Concepts Covered
 - Schema design & normalization
 - JOINs (INNER, multiple tables)
@@ -208,5 +211,6 @@ CALL transfer_fund(1, 2, 100.00); -- from_account, to_account, amount
 - Window Functions (SUM OVER, ROW_NUMBER, LAG, LEAD)
 - Stored Procedures with IN parameters
 - Views for reusable queries
+- Triggers for automatic balance updates
 - Query optimization with EXPLAIN & indexes
 - Data integrity with FOREIGN KEYs & ENUM
