@@ -1,5 +1,4 @@
 # 💰 Personal Finance Tracker
-
 A MySQL project focused on personal finance management.  
 Built to strengthen SQL skills through real-world schema design, 
 queries, stored procedures, and data analysis.
